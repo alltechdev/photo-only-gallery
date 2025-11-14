@@ -69,10 +69,6 @@ class SettingsActivity : SimpleActivity() {
         setupScrollHorizontally()
         setupScreenRotation()
         setupHideSystemUI()
-        setupHiddenItemPasswordProtection()
-        setupExcludedItemPasswordProtection()
-        setupAppPasswordProtection()
-        setupFileDeletionPasswordProtection()
         setupDeleteEmptyFolders()
         setupKeepScreenOn()
         setupAllowPhotoGestures()
@@ -112,7 +108,6 @@ class SettingsActivity : SimpleActivity() {
             binding.settingsFullscreenMediaLabel,
             binding.settingsDeepZoomableImagesLabel,
             binding.settingsExtendedDetailsLabel,
-            binding.settingsSecurityLabel,
             binding.settingsFileOperationsLabel,
             binding.settingsBottomActionsLabel,
             binding.settingsRecycleBinLabel,
@@ -128,6 +123,13 @@ class SettingsActivity : SimpleActivity() {
         binding.settingsLoopVideosHolder.beGone()
         binding.settingsOpenVideosOnSeparateScreenHolder.beGone()
         binding.settingsAllowVideoGesturesHolder.beGone()
+
+        // Hide security section
+        binding.settingsSecurityLabel.beGone()
+        binding.settingsHiddenItemPasswordProtectionHolder.beGone()
+        binding.settingsExcludedItemPasswordProtectionHolder.beGone()
+        binding.settingsAppPasswordProtectionHolder.beGone()
+        binding.settingsFileDeletionPasswordProtectionHolder.beGone()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
