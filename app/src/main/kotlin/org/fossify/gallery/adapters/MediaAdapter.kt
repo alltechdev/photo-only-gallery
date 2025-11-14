@@ -54,8 +54,6 @@ import org.fossify.gallery.activities.ViewPagerActivity
 import org.fossify.gallery.databinding.PhotoItemGridBinding
 import org.fossify.gallery.databinding.PhotoItemListBinding
 import org.fossify.gallery.databinding.ThumbnailSectionBinding
-import org.fossify.gallery.databinding.VideoItemGridBinding
-import org.fossify.gallery.databinding.VideoItemListBinding
 import org.fossify.gallery.dialogs.DeleteWithRememberDialog
 import org.fossify.gallery.extensions.config
 import org.fossify.gallery.extensions.fixDateTaken
@@ -137,17 +135,9 @@ class MediaAdapter(
             ThumbnailSectionBinding.inflate(layoutInflater, parent, false)
         } else {
             if (isListViewType) {
-                if (viewType == ITEM_MEDIUM_PHOTO) {
-                    PhotoItemListBinding.inflate(layoutInflater, parent, false)
-                } else {
-                    VideoItemListBinding.inflate(layoutInflater, parent, false)
-                }
+                PhotoItemListBinding.inflate(layoutInflater, parent, false)
             } else {
-                if (viewType == ITEM_MEDIUM_PHOTO) {
-                    PhotoItemGridBinding.inflate(layoutInflater, parent, false)
-                } else {
-                    VideoItemGridBinding.inflate(layoutInflater, parent, false)
-                }
+                PhotoItemGridBinding.inflate(layoutInflater, parent, false)
             }
         }
         return createViewHolder(binding.root)
@@ -172,7 +162,6 @@ class MediaAdapter(
         val tmbItem = media[position]
         return when {
             tmbItem is ThumbnailSection -> ITEM_SECTION
-            (tmbItem as Medium).isVideo() || tmbItem.isPortrait() -> ITEM_MEDIUM_VIDEO_PORTRAIT
             else -> ITEM_MEDIUM_PHOTO
         }
     }
@@ -668,17 +657,8 @@ class MediaAdapter(
 
             favorite.beVisibleIf(medium.isFavorite && config.markFavoriteItems)
 
-            playPortraitOutline?.beVisibleIf(medium.isVideo() || medium.isPortrait())
-            if (medium.isVideo()) {
-                playPortraitOutline?.setImageResource(
-                    if (isListViewType) {
-                        org.fossify.commons.R.drawable.ic_play_outline_vector
-                    } else {
-                        org.fossify.commons.R.drawable.ic_play_vector
-                    }
-                )
-                playPortraitOutline?.beVisible()
-            } else if (medium.isPortrait()) {
+            playPortraitOutline?.beVisibleIf(medium.isPortrait())
+            if (medium.isPortrait()) {
                 playPortraitOutline?.setImageResource(R.drawable.ic_portrait_photo_vector)
                 playPortraitOutline?.beVisibleIf(showFileTypes)
             }
@@ -700,14 +680,7 @@ class MediaAdapter(
             mediumName.text = medium.name
             mediumName.tag = medium.path
 
-            val showVideoDuration = medium.isVideo() && config.showThumbnailVideoDuration
-            if (showVideoDuration) {
-                videoDuration?.text = medium.videoDuration.getFormattedDuration()
-            }
-            videoDuration?.beVisibleIf(showVideoDuration)
-            if (isListViewType) {
-                videoDuration?.setTextColor(textColor)
-            }
+            videoDuration?.beGone()
 
             mediumCheck.beVisibleIf(isSelected)
             if (isSelected) {
@@ -779,17 +752,9 @@ class MediaAdapter(
 
     private fun bindItem(view: View, medium: Medium): MediaItemBinding {
         return if (isListViewType) {
-            if (!medium.isVideo() && !medium.isPortrait()) {
-                PhotoItemListBinding.bind(view).toMediaItemBinding()
-            } else {
-                VideoItemListBinding.bind(view).toMediaItemBinding()
-            }
+            PhotoItemListBinding.bind(view).toMediaItemBinding()
         } else {
-            if (!medium.isVideo() && !medium.isPortrait()) {
-                PhotoItemGridBinding.bind(view).toMediaItemBinding()
-            } else {
-                VideoItemGridBinding.bind(view).toMediaItemBinding()
-            }
+            PhotoItemGridBinding.bind(view).toMediaItemBinding()
         }
     }
 }

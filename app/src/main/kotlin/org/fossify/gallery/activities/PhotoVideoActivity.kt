@@ -54,7 +54,6 @@ import org.fossify.gallery.extensions.sharePath
 import org.fossify.gallery.extensions.showFileOnMap
 import org.fossify.gallery.extensions.showSystemUI
 import org.fossify.gallery.fragments.PhotoFragment
-import org.fossify.gallery.fragments.VideoFragment
 import org.fossify.gallery.fragments.ViewPagerFragment
 import org.fossify.gallery.helpers.BOTTOM_ACTION_EDIT
 import org.fossify.gallery.helpers.BOTTOM_ACTION_PROPERTIES
@@ -72,7 +71,6 @@ import org.fossify.gallery.helpers.TYPE_IMAGES
 import org.fossify.gallery.helpers.TYPE_PORTRAITS
 import org.fossify.gallery.helpers.TYPE_RAWS
 import org.fossify.gallery.helpers.TYPE_SVGS
-import org.fossify.gallery.helpers.TYPE_VIDEOS
 import org.fossify.gallery.models.Medium
 import java.io.File
 
@@ -82,8 +80,6 @@ open class PhotoVideoActivity : BaseViewerActivity(), ViewPagerFragment.Fragment
     private var mIsFromGallery = false
     private var mFragment: ViewPagerFragment? = null
     private var mUri: Uri? = null
-
-    var mIsVideo = false
 
     private val binding by viewBinding(FragmentHolderBinding::inflate)
 
@@ -187,10 +183,6 @@ open class PhotoVideoActivity : BaseViewerActivity(), ViewPagerFragment.Fragment
 
         var filename = getFilenameFromUri(mUri!!)
         mIsFromGallery = intent.getBooleanExtra(IS_FROM_GALLERY, false)
-        if (mIsFromGallery && filename.isVideoFast() && config.openVideosOnSeparateScreen) {
-            launchVideoPlayer()
-            return
-        }
 
         if (intent.extras?.containsKey(REAL_FILE_PATH) == true) {
             val realPath = intent.extras!!.getString(REAL_FILE_PATH)
@@ -242,7 +234,6 @@ open class PhotoVideoActivity : BaseViewerActivity(), ViewPagerFragment.Fragment
         val file = File(mUri.toString())
         val intentType = intent.type ?: ""
         val type = when {
-            filename.isVideoFast() || intentType.startsWith("video/") -> TYPE_VIDEOS
             filename.isGif() || intentType.equals("image/gif", true) -> TYPE_GIFS
             filename.isRawFast() -> TYPE_RAWS
             filename.isSvg() -> TYPE_SVGS
@@ -250,13 +241,12 @@ open class PhotoVideoActivity : BaseViewerActivity(), ViewPagerFragment.Fragment
             else -> TYPE_IMAGES
         }
 
-        mIsVideo = type == TYPE_VIDEOS
-        mMedium = Medium(null, filename, mUri.toString(), mUri!!.path!!.getParentPath(), 0, 0, file.length(), type, 0, false, 0L, 0)
+        mMedium = Medium(null, filename, mUri.toString(), mUri!!.path!!.getParentPath(), 0, 0, file.length(), type, false, 0L, 0)
         binding.fragmentViewerToolbar.title = Html.fromHtml("<font color='${Color.WHITE.toHex()}'>${mMedium!!.name}</font>")
         bundle.putSerializable(MEDIUM, mMedium)
 
         if (savedInstanceState == null) {
-            mFragment = if (mIsVideo) VideoFragment() else PhotoFragment()
+            mFragment = PhotoFragment()
             mFragment!!.listener = this
             mFragment!!.arguments = bundle
             supportFragmentManager.beginTransaction().replace(R.id.fragment_placeholder, mFragment!!).commit()
@@ -273,28 +263,6 @@ open class PhotoVideoActivity : BaseViewerActivity(), ViewPagerFragment.Fragment
         }
 
         initBottomActions()
-    }
-
-    private fun launchVideoPlayer() {
-        val newUri = getFinalUriFromPath(mUri.toString(), BuildConfig.APPLICATION_ID)
-        if (newUri == null) {
-            toast(org.fossify.commons.R.string.unknown_error_occurred)
-            return
-        }
-
-        hideKeyboard()
-        val mimeType = getUriMimeType(mUri.toString(), newUri)
-        Intent(applicationContext, VideoPlayerActivity::class.java).apply {
-            setDataAndType(newUri, mimeType)
-            addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
-            if (intent.extras != null) {
-                putExtras(intent.extras!!)
-            }
-
-            startActivity(this)
-        }
-
-        finish()
     }
 
     private fun sendViewPagerIntent(path: String) {
@@ -349,7 +317,6 @@ open class PhotoVideoActivity : BaseViewerActivity(), ViewPagerFragment.Fragment
     private fun isFileTypeVisible(path: String): Boolean {
         val filter = config.filterMedia
         return !(path.isImageFast() && filter and TYPE_IMAGES == 0 ||
-            path.isVideoFast() && filter and TYPE_VIDEOS == 0 ||
             path.isGif() && filter and TYPE_GIFS == 0 ||
             path.isRawFast() && filter and TYPE_RAWS == 0 ||
             path.isSvg() && filter and TYPE_SVGS == 0 ||

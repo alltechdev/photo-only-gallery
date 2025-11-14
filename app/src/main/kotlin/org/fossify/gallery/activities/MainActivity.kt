@@ -116,7 +116,6 @@ import org.fossify.gallery.extensions.updateWidgets
 import org.fossify.gallery.helpers.DIRECTORY
 import org.fossify.gallery.helpers.GET_ANY_INTENT
 import org.fossify.gallery.helpers.GET_IMAGE_INTENT
-import org.fossify.gallery.helpers.GET_VIDEO_INTENT
 import org.fossify.gallery.helpers.GROUP_BY_DATE_TAKEN_DAILY
 import org.fossify.gallery.helpers.GROUP_BY_DATE_TAKEN_MONTHLY
 import org.fossify.gallery.helpers.GROUP_BY_LAST_MODIFIED_DAILY
@@ -136,7 +135,6 @@ import org.fossify.gallery.helpers.TYPE_GIFS
 import org.fossify.gallery.helpers.TYPE_IMAGES
 import org.fossify.gallery.helpers.TYPE_RAWS
 import org.fossify.gallery.helpers.TYPE_SVGS
-import org.fossify.gallery.helpers.TYPE_VIDEOS
 import org.fossify.gallery.helpers.getDefaultFileFilter
 import org.fossify.gallery.helpers.getPermissionToRequest
 import org.fossify.gallery.helpers.getPermissionsToRequest
@@ -630,7 +628,7 @@ class MainActivity : SimpleActivity(), DirectoryOperationsListener {
         mShouldStopFetching = true
         mIsGettingDirs = true
         val getImages = mIsPickImageIntent || mIsGetImageContentIntent
-        val getVideos = mIsPickVideoIntent || mIsGetVideoContentIntent
+        val getVideos = false
 
         getCachedDirectories(getVideos && !getImages, getImages && !getVideos) {
             gotDirectories(addTempFolderIfNeeded(it))
@@ -782,7 +780,6 @@ class MainActivity : SimpleActivity(), DirectoryOperationsListener {
                 it.absolutePath.isMediaFile()
                         && (showHidden || !it.name.startsWith('.'))
                         && ((it.isImageFast() && filter and TYPE_IMAGES != 0)
-                        || (it.isVideoFast() && filter and TYPE_VIDEOS != 0)
                         || (it.isGif() && filter and TYPE_GIFS != 0)
                         || (it.isRawFast() && filter and TYPE_RAWS != 0)
                         || (it.isSvg() && filter and TYPE_SVGS != 0))
@@ -1085,7 +1082,6 @@ class MainActivity : SimpleActivity(), DirectoryOperationsListener {
                 startActivityForResult(this, PICK_WALLPAPER)
             } else {
                 putExtra(GET_IMAGE_INTENT, mIsPickImageIntent || mIsGetImageContentIntent)
-                putExtra(GET_VIDEO_INTENT, mIsPickVideoIntent || mIsGetVideoContentIntent)
                 putExtra(GET_ANY_INTENT, mIsGetAnyContentIntent)
                 putExtra(Intent.EXTRA_ALLOW_MULTIPLE, mAllowPickingMultiple)
                 startActivityForResult(this, PICK_MEDIA)

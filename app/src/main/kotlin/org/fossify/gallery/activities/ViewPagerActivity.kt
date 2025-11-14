@@ -126,7 +126,6 @@ import org.fossify.gallery.extensions.updateDBMediaPath
 import org.fossify.gallery.extensions.updateFavorite
 import org.fossify.gallery.extensions.updateFavoritePaths
 import org.fossify.gallery.fragments.PhotoFragment
-import org.fossify.gallery.fragments.VideoFragment
 import org.fossify.gallery.fragments.ViewPagerFragment
 import org.fossify.gallery.helpers.BOTTOM_ACTION_CHANGE_ORIENTATION
 import org.fossify.gallery.helpers.BOTTOM_ACTION_COPY
@@ -175,7 +174,6 @@ import org.fossify.gallery.helpers.TYPE_IMAGES
 import org.fossify.gallery.helpers.TYPE_PORTRAITS
 import org.fossify.gallery.helpers.TYPE_RAWS
 import org.fossify.gallery.helpers.TYPE_SVGS
-import org.fossify.gallery.helpers.TYPE_VIDEOS
 import org.fossify.gallery.helpers.getPermissionToRequest
 import org.fossify.gallery.models.Medium
 import org.fossify.gallery.models.ThumbnailItem
@@ -185,7 +183,6 @@ import kotlin.math.min
 @Suppress("UNCHECKED_CAST")
 class ViewPagerActivity : BaseViewerActivity(), ViewPager.OnPageChangeListener, ViewPagerFragment.FragmentListener {
     companion object {
-        private const val REQUEST_VIEW_VIDEO = 1
         private const val SAVED_PATH = "current_path"
     }
 
@@ -397,12 +394,6 @@ class ViewPagerActivity : BaseViewerActivity(), ViewPager.OnPageChangeListener, 
             refreshViewPager()
         } else if (requestCode == REQUEST_SET_AS && resultCode == Activity.RESULT_OK) {
             toast(R.string.wallpaper_set_successfully)
-        } else if (requestCode == REQUEST_VIEW_VIDEO && resultCode == Activity.RESULT_OK && resultData != null) {
-            if (resultData.getBooleanExtra(GO_TO_NEXT_ITEM, false)) {
-                goToNextItem()
-            } else if (resultData.getBooleanExtra(GO_TO_PREV_ITEM, false)) {
-                goToPrevItem()
-            }
         }
         super.onActivityResult(requestCode, resultCode, resultData)
     }
@@ -509,7 +500,7 @@ class ViewPagerActivity : BaseViewerActivity(), ViewPager.OnPageChangeListener, 
             val filename = mPath.getFilenameFromPath()
             val folder = mPath.getParentPath()
             val type = getTypeFromPath(mPath)
-            val medium = Medium(null, filename, mPath, folder, 0, 0, 0, type, 0, false, 0L, 0L)
+            val medium = Medium(null, filename, mPath, folder, 0, 0, 0, type, false, 0L, 0L)
             mMediaFiles.add(medium)
             gotMedia(mMediaFiles as ArrayList<ThumbnailItem>, refetchViewPagerPosition = true)
         }
@@ -540,9 +531,8 @@ class ViewPagerActivity : BaseViewerActivity(), ViewPager.OnPageChangeListener, 
                     val parent = mPath.getParentPath()
                     val type = getTypeFromPath(mPath)
                     val isFavorite = favoritesDB.isFavorite(mPath)
-                    val duration = if (type == TYPE_VIDEOS) getDuration(mPath) ?: 0 else 0
                     val ts = System.currentTimeMillis()
-                    val medium = Medium(null, filename, mPath, parent, ts, ts, File(mPath).length(), type, duration, isFavorite, 0, 0L)
+                    val medium = Medium(null, filename, mPath, parent, ts, ts, File(mPath).length(), type, isFavorite, 0, 0L)
                     mediaDB.insert(medium)
                 }
             }
@@ -551,7 +541,6 @@ class ViewPagerActivity : BaseViewerActivity(), ViewPager.OnPageChangeListener, 
 
     private fun getTypeFromPath(path: String): Int {
         return when {
-            path.isVideoFast() -> TYPE_VIDEOS
             path.isGif() -> TYPE_GIFS
             path.isSvg() -> TYPE_SVGS
             path.isRawFast() -> TYPE_RAWS
@@ -733,8 +722,6 @@ class ViewPagerActivity : BaseViewerActivity(), ViewPager.OnPageChangeListener, 
                         swipeToNextMedium()
                     }
                 }, mSlideshowInterval * 1000L)
-            } else {
-                (getCurrentFragment() as? VideoFragment)!!.playVideo()
             }
         }
     }
@@ -749,7 +736,7 @@ class ViewPagerActivity : BaseViewerActivity(), ViewPager.OnPageChangeListener, 
 
     private fun getMediaForSlideshow(): Boolean {
         mSlideshowMedia = mMediaFiles.filter {
-            it.isImage() || it.isPortrait() || (config.slideshowIncludeVideos && it.isVideo() || (config.slideshowIncludeGIFs && it.isGIF()))
+            it.isImage() || it.isPortrait() || (config.slideshowIncludeGIFs && it.isGIF())
         }.toMutableList()
 
         if (config.slideshowRandomOrder) {
@@ -1338,11 +1325,6 @@ class ViewPagerActivity : BaseViewerActivity(), ViewPager.OnPageChangeListener, 
             return
         }
 
-        val isPlaying = (getCurrentFragment() as? VideoFragment)?.mIsPlaying == true
-        if (!ignorePlayingVideos && isPlaying && !isExternalIntent()) {
-            return
-        }
-
         refreshUI(media, refetchViewPagerPosition)
     }
 
@@ -1449,30 +1431,7 @@ class ViewPagerActivity : BaseViewerActivity(), ViewPager.OnPageChangeListener, 
     }
 
     override fun launchViewVideoIntent(path: String) {
-        hideKeyboard()
-        ensureBackgroundThread {
-            val newUri = getFinalUriFromPath(path, BuildConfig.APPLICATION_ID) ?: return@ensureBackgroundThread
-            val mimeType = getUriMimeType(path, newUri)
-            Intent().apply {
-                action = Intent.ACTION_VIEW
-                setDataAndType(newUri, mimeType)
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                putExtra(IS_FROM_GALLERY, true)
-                putExtra(REAL_FILE_PATH, path)
-                putExtra(SHOW_PREV_ITEM, binding.viewPager.currentItem != 0)
-                putExtra(SHOW_NEXT_ITEM, binding.viewPager.currentItem != mMediaFiles.lastIndex)
-
-                try {
-                    startActivityForResult(this, REQUEST_VIEW_VIDEO)
-                } catch (e: ActivityNotFoundException) {
-                    if (!tryGenericMimeType(this, mimeType, newUri)) {
-                        toast(org.fossify.commons.R.string.no_app_found)
-                    }
-                } catch (e: Exception) {
-                    showErrorToast(e)
-                }
-            }
-        }
+        // Video support removed
     }
 
     private fun checkSystemUI() {

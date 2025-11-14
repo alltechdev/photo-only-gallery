@@ -102,7 +102,6 @@ import org.fossify.gallery.helpers.TYPE_IMAGES
 import org.fossify.gallery.helpers.TYPE_PORTRAITS
 import org.fossify.gallery.helpers.TYPE_RAWS
 import org.fossify.gallery.helpers.TYPE_SVGS
-import org.fossify.gallery.helpers.TYPE_VIDEOS
 import org.fossify.gallery.interfaces.DateTakensDao
 import org.fossify.gallery.interfaces.DirectoryDao
 import org.fossify.gallery.interfaces.FavoritesDao
@@ -880,11 +879,10 @@ fun Context.getCachedDirectories(
 
         val filterMedia = config.filterMedia
         filteredDirectories = (when {
-            getVideosOnly -> filteredDirectories.filter { it.types and TYPE_VIDEOS != 0 }
+            getVideosOnly -> ArrayList()
             getImagesOnly -> filteredDirectories.filter { it.types and TYPE_IMAGES != 0 }
             else -> filteredDirectories.filter {
                 (filterMedia and TYPE_IMAGES != 0 && it.types and TYPE_IMAGES != 0)
-                        || (filterMedia and TYPE_VIDEOS != 0 && it.types and TYPE_VIDEOS != 0)
                         || (filterMedia and TYPE_GIFS != 0 && it.types and TYPE_GIFS != 0)
                         || (filterMedia and TYPE_RAWS != 0 && it.types and TYPE_RAWS != 0)
                         || (filterMedia and TYPE_SVGS != 0 && it.types and TYPE_SVGS != 0)
@@ -968,11 +966,10 @@ fun Context.getCachedMedia(
 
         val filterMedia = config.filterMedia
         media = (when {
-            getVideosOnly -> media.filter { it.type == TYPE_VIDEOS }
+            getVideosOnly -> ArrayList()
             getImagesOnly -> media.filter { it.type == TYPE_IMAGES }
             else -> media.filter {
                 (filterMedia and TYPE_IMAGES != 0 && it.type == TYPE_IMAGES)
-                        || (filterMedia and TYPE_VIDEOS != 0 && it.type == TYPE_VIDEOS)
                         || (filterMedia and TYPE_GIFS != 0 && it.type == TYPE_GIFS)
                         || (filterMedia and TYPE_RAWS != 0 && it.type == TYPE_RAWS)
                         || (filterMedia and TYPE_SVGS != 0 && it.type == TYPE_SVGS)
@@ -1198,8 +1195,12 @@ fun Context.addPathToDB(path: String) {
             return@ensureBackgroundThread
         }
 
+        // Skip videos - photos only
+        if (path.isVideoFast()) {
+            return@ensureBackgroundThread
+        }
+
         val type = when {
-            path.isVideoFast() -> TYPE_VIDEOS
             path.isGif() -> TYPE_GIFS
             path.isRawFast() -> TYPE_RAWS
             path.isSvg() -> TYPE_SVGS
@@ -1209,7 +1210,6 @@ fun Context.addPathToDB(path: String) {
 
         try {
             val isFavorite = favoritesDB.isFavorite(path)
-            val videoDuration = if (type == TYPE_VIDEOS) getDuration(path) ?: 0 else 0
             val medium = Medium(
                 id = null,
                 name = path.getFilenameFromPath(),
@@ -1219,7 +1219,6 @@ fun Context.addPathToDB(path: String) {
                 taken = System.currentTimeMillis(),
                 size = File(path).length(),
                 type = type,
-                videoDuration = videoDuration,
                 isFavorite = isFavorite,
                 deletedTS = 0L,
                 mediaStoreId = 0L
@@ -1260,7 +1259,7 @@ fun Context.createDirectoryFromMedia(
     }
 
     val isSortingAscending = config.directorySorting.isSortingAscending()
-    val defaultMedium = Medium(0, "", "", "", 0L, 0L, 0L, 0, 0, false, 0L, 0L)
+    val defaultMedium = Medium(0, "", "", "", 0L, 0L, 0L, 0, false, 0L, 0L)
     val firstItem = curMedia.firstOrNull() ?: defaultMedium
     val lastItem = curMedia.lastOrNull() ?: defaultMedium
     val dirName = checkAppendingHidden(path, hiddenString, includedFolders, noMediaFolders)

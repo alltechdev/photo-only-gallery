@@ -6,8 +6,6 @@ import android.widget.TextView
 import org.fossify.commons.views.MySquareImageView
 import org.fossify.gallery.databinding.PhotoItemGridBinding
 import org.fossify.gallery.databinding.PhotoItemListBinding
-import org.fossify.gallery.databinding.VideoItemGridBinding
-import org.fossify.gallery.databinding.VideoItemListBinding
 
 interface MediaItemBinding {
     val root: ViewGroup
@@ -48,31 +46,3 @@ class PhotoGridMediaItemBinding(val binding: PhotoItemGridBinding) : MediaItemBi
 }
 
 fun PhotoItemGridBinding.toMediaItemBinding() = PhotoGridMediaItemBinding(this)
-
-class VideoListMediaItemBinding(val binding: VideoItemListBinding) : MediaItemBinding {
-    override val root: ViewGroup = binding.root
-    override val mediaItemHolder: ViewGroup = binding.mediaItemHolder
-    override val favorite: ImageView = binding.favorite
-    override val playPortraitOutline: ImageView = binding.playPortraitOutline
-    override val fileType: TextView? = null
-    override val mediumName: TextView = binding.mediumName
-    override val videoDuration: TextView = binding.videoDuration
-    override val mediumCheck: ImageView = binding.mediumCheck
-    override val mediumThumbnail: MySquareImageView = binding.mediumThumbnail
-}
-
-fun VideoItemListBinding.toMediaItemBinding() = VideoListMediaItemBinding(this)
-
-class VideoGridMediaItemBinding(val binding: VideoItemGridBinding) : MediaItemBinding {
-    override val root: ViewGroup = binding.root
-    override val mediaItemHolder: ViewGroup = binding.mediaItemHolder
-    override val favorite: ImageView = binding.favorite
-    override val playPortraitOutline: ImageView = binding.playPortraitOutline
-    override val fileType: TextView? = null
-    override val mediumName: TextView = binding.mediumName
-    override val videoDuration: TextView = binding.videoDuration
-    override val mediumCheck: ImageView = binding.mediumCheck
-    override val mediumThumbnail: MySquareImageView = binding.mediumThumbnail
-}
-
-fun VideoItemGridBinding.toMediaItemBinding() = VideoGridMediaItemBinding(this)

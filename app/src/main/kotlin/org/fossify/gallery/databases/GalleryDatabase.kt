@@ -9,7 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import org.fossify.gallery.interfaces.*
 import org.fossify.gallery.models.*
 
-@Database(entities = [Directory::class, Medium::class, Widget::class, DateTaken::class, Favorite::class], version = 10)
+@Database(entities = [Directory::class, Medium::class, Widget::class, DateTaken::class, Favorite::class], version = 11)
 abstract class GalleryDatabase : RoomDatabase() {
 
     abstract fun DirectoryDao(): DirectoryDao
@@ -37,6 +37,7 @@ abstract class GalleryDatabase : RoomDatabase() {
                             .addMigrations(MIGRATION_7_8)
                             .addMigrations(MIGRATION_8_9)
                             .addMigrations(MIGRATION_9_10)
+                            .addMigrations(MIGRATION_10_11)
                             .build()
                     }
                 }
@@ -89,6 +90,17 @@ abstract class GalleryDatabase : RoomDatabase() {
         private val MIGRATION_9_10 = object : Migration(9, 10) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE media ADD COLUMN media_store_id INTEGER default 0 NOT NULL")
+            }
+        }
+
+        private val MIGRATION_10_11 = object : Migration(10, 11) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Remove video_duration column - videos are no longer supported
+                database.execSQL("CREATE TABLE media_new (id INTEGER PRIMARY KEY AUTOINCREMENT, filename TEXT NOT NULL, full_path TEXT NOT NULL, parent_path TEXT NOT NULL, last_modified INTEGER NOT NULL, date_taken INTEGER NOT NULL, size INTEGER NOT NULL, type INTEGER NOT NULL, is_favorite INTEGER NOT NULL, deleted_ts INTEGER NOT NULL, media_store_id INTEGER NOT NULL)")
+                database.execSQL("INSERT INTO media_new (id, filename, full_path, parent_path, last_modified, date_taken, size, type, is_favorite, deleted_ts, media_store_id) SELECT id, filename, full_path, parent_path, last_modified, date_taken, size, type, is_favorite, deleted_ts, media_store_id FROM media")
+                database.execSQL("DROP TABLE media")
+                database.execSQL("ALTER TABLE media_new RENAME TO media")
+                database.execSQL("CREATE UNIQUE INDEX index_media_full_path ON media (full_path)")
             }
         }
     }

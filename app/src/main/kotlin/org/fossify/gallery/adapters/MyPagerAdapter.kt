@@ -9,7 +9,6 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.PagerAdapter
 import org.fossify.gallery.activities.ViewPagerActivity
 import org.fossify.gallery.fragments.PhotoFragment
-import org.fossify.gallery.fragments.VideoFragment
 import org.fossify.gallery.fragments.ViewPagerFragment
 import org.fossify.gallery.helpers.MEDIUM
 import org.fossify.gallery.helpers.SHOULD_INIT_FRAGMENT
@@ -26,11 +25,7 @@ class MyPagerAdapter(val activity: ViewPagerActivity, fm: FragmentManager, val m
         val bundle = Bundle()
         bundle.putSerializable(MEDIUM, medium)
         bundle.putBoolean(SHOULD_INIT_FRAGMENT, shouldInitFragment)
-        val fragment = if (medium.isVideo()) {
-            VideoFragment()
-        } else {
-            PhotoFragment()
-        }
+        val fragment = PhotoFragment()
 
         fragment.arguments = bundle
         return fragment

@@ -89,7 +89,6 @@ import org.fossify.gallery.extensions.updateWidgets
 import org.fossify.gallery.helpers.DIRECTORY
 import org.fossify.gallery.helpers.GET_ANY_INTENT
 import org.fossify.gallery.helpers.GET_IMAGE_INTENT
-import org.fossify.gallery.helpers.GET_VIDEO_INTENT
 import org.fossify.gallery.helpers.GridSpacingItemDecoration
 import org.fossify.gallery.helpers.IS_IN_RECYCLE_BIN
 import org.fossify.gallery.helpers.MAX_COLUMN_COUNT
@@ -156,7 +155,7 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
 
         intent.apply {
             mIsGetImageIntent = getBooleanExtra(GET_IMAGE_INTENT, false)
-            mIsGetVideoIntent = getBooleanExtra(GET_VIDEO_INTENT, false)
+            mIsGetVideoIntent = false
             mIsGetAnyIntent = getBooleanExtra(GET_ANY_INTENT, false)
             mAllowPickingMultiple = getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
         }
@@ -964,28 +963,14 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
             finish()
         } else {
             mWasFullscreenViewOpen = true
-            val isVideo = path.isVideoFast()
-            if (isVideo) {
-                val extras = HashMap<String, Boolean>()
-                extras[SHOW_FAVORITES] = mPath == FAVORITES
-                if (path.startsWith(recycleBinPath)) {
-                    extras[IS_IN_RECYCLE_BIN] = true
-                }
-
-                if (shouldSkipAuthentication()) {
-                    extras[SKIP_AUTHENTICATION] = true
-                }
-                openPath(path, false, extras)
-            } else {
-                Intent(this, ViewPagerActivity::class.java).apply {
-                    putExtra(SKIP_AUTHENTICATION, shouldSkipAuthentication())
-                    putExtra(PATH, path)
-                    putExtra(SHOW_ALL, mShowAll)
-                    putExtra(SHOW_FAVORITES, mPath == FAVORITES)
-                    putExtra(SHOW_RECYCLE_BIN, mPath == RECYCLE_BIN)
-                    putExtra(IS_FROM_GALLERY, true)
-                    startActivity(this)
-                }
+            Intent(this, ViewPagerActivity::class.java).apply {
+                putExtra(SKIP_AUTHENTICATION, shouldSkipAuthentication())
+                putExtra(PATH, path)
+                putExtra(SHOW_ALL, mShowAll)
+                putExtra(SHOW_FAVORITES, mPath == FAVORITES)
+                putExtra(SHOW_RECYCLE_BIN, mPath == RECYCLE_BIN)
+                putExtra(IS_FROM_GALLERY, true)
+                startActivity(this)
             }
         }
     }

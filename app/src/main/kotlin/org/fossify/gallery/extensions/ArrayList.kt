@@ -9,10 +9,6 @@ fun ArrayList<Medium>.getDirMediaTypes(): Int {
         types += TYPE_IMAGES
     }
 
-    if (any { it.isVideo() }) {
-        types += TYPE_VIDEOS
-    }
-
     if (any { it.isGIF() }) {
         types += TYPE_GIFS
     }

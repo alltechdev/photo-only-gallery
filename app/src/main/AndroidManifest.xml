@@ -13,7 +13,6 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission
@@ -69,9 +68,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:mimeType="image/*" />
-                <data android:mimeType="video/*" />
                 <data android:mimeType="vnd.android.cursor.dir/image" />
-                <data android:mimeType="vnd.android.cursor.dir/video" />
             </intent-filter>
 
             <intent-filter>
@@ -81,9 +78,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:mimeType="image/*" />
-                <data android:mimeType="video/*" />
                 <data android:mimeType="vnd.android.cursor.dir/image" />
-                <data android:mimeType="vnd.android.cursor.dir/video" />
             </intent-filter>
         </activity>
 
@@ -115,7 +110,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:mimeType="image/*" />
-                <data android:mimeType="video/*" />
             </intent-filter>
 
             <intent-filter>
@@ -125,7 +119,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:mimeType="image/*" />
-                <data android:mimeType="video/*" />
             </intent-filter>
         </activity>
 
@@ -163,13 +156,6 @@
             android:theme="@style/TranslucentTheme" />
 
         <activity
-            android:name=".activities.VideoPlayerActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:exported="false"
-            android:parentActivityName=".activities.MediaActivity"
-            android:theme="@style/TranslucentTheme" />
-
-        <activity
             android:name=".activities.IncludedFoldersActivity"
             android:configChanges="orientation"
             android:exported="false"
@@ -201,20 +187,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:mimeType="image/*" />
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".activities.VideoActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="video/*" />
             </intent-filter>
         </activity>
 

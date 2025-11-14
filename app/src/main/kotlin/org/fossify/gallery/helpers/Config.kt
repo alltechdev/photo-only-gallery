@@ -161,10 +161,6 @@ class Config(context: Context) : BaseConfig(context) {
         get() = prefs.getStringSet(INCLUDED_FOLDERS, HashSet<String>())!!
         set(includedFolders) = prefs.edit().remove(INCLUDED_FOLDERS).putStringSet(INCLUDED_FOLDERS, includedFolders).apply()
 
-    var autoplayVideos: Boolean
-        get() = prefs.getBoolean(AUTOPLAY_VIDEOS, false)
-        set(autoplayVideos) = prefs.edit().putBoolean(AUTOPLAY_VIDEOS, autoplayVideos).apply()
-
     var animateGifs: Boolean
         get() = prefs.getBoolean(ANIMATE_GIFS, false)
         set(animateGifs) = prefs.edit().putBoolean(ANIMATE_GIFS, animateGifs).apply()
@@ -173,21 +169,9 @@ class Config(context: Context) : BaseConfig(context) {
         get() = prefs.getBoolean(MAX_BRIGHTNESS, false)
         set(maxBrightness) = prefs.edit().putBoolean(MAX_BRIGHTNESS, maxBrightness).apply()
 
-    var playbackSpeed: Float
-        get() = prefs.getFloat(PLAYBACK_SPEED, 1f)
-        set(playbackSpeed) = prefs.edit().putFloat(PLAYBACK_SPEED, playbackSpeed).apply()
-
-    var playbackSpeedProgress: Int
-        get() = prefs.getInt(PLAYBACK_SPEED_PROGRESS, -1)
-        set(playbackSpeedProgress) = prefs.edit().putInt(PLAYBACK_SPEED_PROGRESS, playbackSpeedProgress).apply()
-
     var cropThumbnails: Boolean
         get() = prefs.getBoolean(CROP_THUMBNAILS, true)
         set(cropThumbnails) = prefs.edit().putBoolean(CROP_THUMBNAILS, cropThumbnails).apply()
-
-    var showThumbnailVideoDuration: Boolean
-        get() = prefs.getBoolean(SHOW_THUMBNAIL_VIDEO_DURATION, true)
-        set(showThumbnailVideoDuration) = prefs.edit().putBoolean(SHOW_THUMBNAIL_VIDEO_DURATION, showThumbnailVideoDuration).apply()
 
     var showThumbnailFileTypes: Boolean
         get() = prefs.getBoolean(SHOW_THUMBNAIL_FILE_TYPES, true)
@@ -204,18 +188,6 @@ class Config(context: Context) : BaseConfig(context) {
     var fileLoadingPriority: Int
         get() = prefs.getInt(FILE_LOADING_PRIORITY, PRIORITY_SPEED)
         set(fileLoadingPriority) = prefs.edit().putInt(FILE_LOADING_PRIORITY, fileLoadingPriority).apply()
-
-    var loopVideos: Boolean
-        get() = prefs.getBoolean(LOOP_VIDEOS, false)
-        set(loop) = prefs.edit().putBoolean(LOOP_VIDEOS, loop).apply()
-
-    var muteVideos: Boolean
-        get() = prefs.getBoolean(MUTE_VIDEOS, false)
-        set(muteVideos) = prefs.edit().putBoolean(MUTE_VIDEOS, muteVideos).apply()
-
-    var openVideosOnSeparateScreen: Boolean
-        get() = prefs.getBoolean(OPEN_VIDEOS_ON_SEPARATE_SCREEN, false)
-        set(openVideosOnSeparateScreen) = prefs.edit().putBoolean(OPEN_VIDEOS_ON_SEPARATE_SCREEN, openVideosOnSeparateScreen).apply()
 
     var displayFileNames: Boolean
         get() = prefs.getBoolean(DISPLAY_FILE_NAMES, false)
@@ -320,17 +292,9 @@ class Config(context: Context) : BaseConfig(context) {
         get() = prefs.getBoolean(ALLOW_PHOTO_GESTURES, false)
         set(allowPhotoGestures) = prefs.edit().putBoolean(ALLOW_PHOTO_GESTURES, allowPhotoGestures).apply()
 
-    var allowVideoGestures: Boolean
-        get() = prefs.getBoolean(ALLOW_VIDEO_GESTURES, true)
-        set(allowVideoGestures) = prefs.edit().putBoolean(ALLOW_VIDEO_GESTURES, allowVideoGestures).apply()
-
     var slideshowInterval: Int
         get() = prefs.getInt(SLIDESHOW_INTERVAL, SLIDESHOW_DEFAULT_INTERVAL)
         set(slideshowInterval) = prefs.edit().putInt(SLIDESHOW_INTERVAL, slideshowInterval).apply()
-
-    var slideshowIncludeVideos: Boolean
-        get() = prefs.getBoolean(SLIDESHOW_INCLUDE_VIDEOS, false)
-        set(slideshowIncludeVideos) = prefs.edit().putBoolean(SLIDESHOW_INCLUDE_VIDEOS, slideshowIncludeVideos).apply()
 
     var slideshowIncludeGIFs: Boolean
         get() = prefs.getBoolean(SLIDESHOW_INCLUDE_GIFS, false)
@@ -415,33 +379,6 @@ class Config(context: Context) : BaseConfig(context) {
     var bottomActions: Boolean
         get() = prefs.getBoolean(BOTTOM_ACTIONS, true)
         set(bottomActions) = prefs.edit().putBoolean(BOTTOM_ACTIONS, bottomActions).apply()
-
-    fun removeLastVideoPosition(path: String) {
-        prefs.edit().remove("$LAST_VIDEO_POSITION_PREFIX${path.lowercase(Locale.getDefault())}").apply()
-    }
-
-    fun saveLastVideoPosition(path: String, value: Int) {
-        if (path.isNotEmpty()) {
-            prefs.edit().putInt("$LAST_VIDEO_POSITION_PREFIX${path.lowercase(Locale.getDefault())}", value).apply()
-        }
-    }
-
-    fun getLastVideoPosition(path: String) = prefs.getInt("$LAST_VIDEO_POSITION_PREFIX${path.lowercase(Locale.getDefault())}", 0)
-
-    fun getAllLastVideoPositions() = prefs.all.filterKeys {
-        it.startsWith(LAST_VIDEO_POSITION_PREFIX)
-    }
-
-    var rememberLastVideoPosition: Boolean
-        get() = prefs.getBoolean(REMEMBER_LAST_VIDEO_POSITION, false)
-        set(rememberLastVideoPosition) {
-            if (!rememberLastVideoPosition) {
-                getAllLastVideoPositions().forEach {
-                    prefs.edit().remove(it.key).apply()
-                }
-            }
-            prefs.edit().putBoolean(REMEMBER_LAST_VIDEO_POSITION, rememberLastVideoPosition).apply()
-        }
 
     var visibleBottomActions: Int
         get() = prefs.getInt(VISIBLE_BOTTOM_ACTIONS, DEFAULT_BOTTOM_ACTIONS)

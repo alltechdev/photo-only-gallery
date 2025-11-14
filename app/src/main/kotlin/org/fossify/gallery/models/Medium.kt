@@ -22,7 +22,6 @@ data class Medium(
     @ColumnInfo(name = "date_taken") var taken: Long,
     @ColumnInfo(name = "size") var size: Long,
     @ColumnInfo(name = "type") var type: Int,
-    @ColumnInfo(name = "video_duration") var videoDuration: Int,
     @ColumnInfo(name = "is_favorite") var isFavorite: Boolean,
     @ColumnInfo(name = "deleted_ts") var deletedTS: Long,
     @ColumnInfo(name = "media_store_id") var mediaStoreId: Long,
@@ -30,7 +29,7 @@ data class Medium(
     @Ignore var gridPosition: Int = 0   // used at grid view decoration at Grouping enabled
 ) : Serializable, ThumbnailItem() {
 
-    constructor() : this(null, "", "", "", 0L, 0L, 0L, 0, 0, false, 0L, 0L, 0)
+    constructor() : this(null, "", "", "", 0L, 0L, 0L, 0, false, 0L, 0L, 0)
 
     companion object {
         private const val serialVersionUID = -6553149366975655L
@@ -41,8 +40,6 @@ data class Medium(
     fun isGIF() = type == TYPE_GIFS
 
     fun isImage() = type == TYPE_IMAGES
-
-    fun isVideo() = type == TYPE_VIDEOS
 
     fun isRaw() = type == TYPE_RAWS
 

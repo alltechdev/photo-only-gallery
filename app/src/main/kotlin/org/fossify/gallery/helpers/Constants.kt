@@ -13,17 +13,9 @@ const val EXCLUDED_PASSWORD_PROTECTION = "excluded_password_protection"
 const val EXCLUDED_PASSWORD_HASH = "excluded_password_hash"
 const val EXCLUDED_PROTECTION_TYPE = "excluded_protection_type"
 const val IS_THIRD_PARTY_INTENT = "is_third_party_intent"
-const val AUTOPLAY_VIDEOS = "autoplay_videos"
-const val REMEMBER_LAST_VIDEO_POSITION = "remember_last_video_position"
-const val LOOP_VIDEOS = "loop_videos"
-const val MUTE_VIDEOS = "mute_videos"
-const val OPEN_VIDEOS_ON_SEPARATE_SCREEN = "open_videos_on_separate_screen"
 const val ANIMATE_GIFS = "animate_gifs"
 const val MAX_BRIGHTNESS = "max_brightness"
-const val PLAYBACK_SPEED = "playback_speed"
-const val PLAYBACK_SPEED_PROGRESS = "playback_speed_progress"
 const val CROP_THUMBNAILS = "crop_thumbnails"
-const val SHOW_THUMBNAIL_VIDEO_DURATION = "show_thumbnail_video_duration"
 const val SCREEN_ROTATION = "screen_rotation"
 const val DISPLAY_FILE_NAMES = "display_file_names"
 const val BLACK_BACKGROUND = "dark_background"
@@ -47,7 +39,6 @@ const val HIDE_SYSTEM_UI = "hide_system_ui"
 const val DELETE_EMPTY_FOLDERS = "delete_empty_folders"
 const val KEEP_SCREEN_ON = "keep_screen_on"
 const val ALLOW_PHOTO_GESTURES = "allow_photo_gestures"
-const val ALLOW_VIDEO_GESTURES = "allow_video_gestures"
 const val TEMP_FOLDER_PATH = "temp_folder_path"
 const val VIEW_TYPE_FOLDERS = "view_type_folders"
 const val VIEW_TYPE_FILES = "view_type_files"
@@ -61,7 +52,6 @@ const val LAST_COPY_PATH = "last_copy_path"
 const val TEMP_SKIP_DELETE_CONFIRMATION = "temp_skip_delete_confirmation"
 const val TEMP_SKIP_RECYCLE_BIN = "temp_skip_recycle_bin"
 const val BOTTOM_ACTIONS = "bottom_actions"
-const val LAST_VIDEO_POSITION_PREFIX = "last_video_position_"
 const val VISIBLE_BOTTOM_ACTIONS = "visible_bottom_actions"
 const val WERE_FAVORITES_PINNED = "were_favorites_pinned"
 const val WAS_RECYCLE_BIN_PINNED = "was_recycle_bin_pinned"
@@ -106,7 +96,6 @@ const val SHOW_PERMISSION_RATIONALE = "show_permission_rationale"
 
 // slideshow
 const val SLIDESHOW_INTERVAL = "slideshow_interval"
-const val SLIDESHOW_INCLUDE_VIDEOS = "slideshow_include_videos"
 const val SLIDESHOW_INCLUDE_GIFS = "slideshow_include_gifs"
 const val SLIDESHOW_RANDOM_ORDER = "slideshow_random_order"
 const val SLIDESHOW_MOVE_BACKWARDS = "slideshow_move_backwards"
@@ -141,16 +130,11 @@ const val MONTH_MILLISECONDS = MONTH_SECONDS * 1000L
 const val MIN_SKIP_LENGTH = 2000
 const val HIDE_SYSTEM_UI_DELAY = 500L
 const val MAX_PRINT_SIDE_SIZE = 4096
-const val FAST_FORWARD_VIDEO_MS = 10000
-
-const val EXOPLAYER_MIN_BUFFER_MS = 2000
-const val EXOPLAYER_MAX_BUFFER_MS = 8000
 
 const val DIRECTORY = "directory"
 const val MEDIUM = "medium"
 const val PATH = "path"
 const val GET_IMAGE_INTENT = "get_image_intent"
-const val GET_VIDEO_INTENT = "get_video_intent"
 const val GET_ANY_INTENT = "get_any_intent"
 const val SET_WALLPAPER_INTENT = "set_wallpaper_intent"
 const val IS_VIEW_INTENT = "is_view_intent"
@@ -188,13 +172,12 @@ const val EXT_GPS = 2048
 
 // media types
 const val TYPE_IMAGES = 1
-const val TYPE_VIDEOS = 2
 const val TYPE_GIFS = 4
 const val TYPE_RAWS = 8
 const val TYPE_SVGS = 16
 const val TYPE_PORTRAITS = 32
 
-fun getDefaultFileFilter() = TYPE_IMAGES or TYPE_VIDEOS or TYPE_GIFS or TYPE_RAWS or TYPE_SVGS
+fun getDefaultFileFilter() = TYPE_IMAGES or TYPE_GIFS or TYPE_RAWS or TYPE_SVGS
 
 const val LOCATION_INTERNAL = 1
 const val LOCATION_SD = 2
@@ -263,10 +246,6 @@ fun getPermissionsToRequest(): Collection<Int> {
     val permissions = mutableListOf(getPermissionToRequest())
     if (isRPlus()) {
         permissions.add(PERMISSION_MEDIA_LOCATION)
-    }
-
-    if (isTiramisuPlus()) {
-        permissions.add(PERMISSION_READ_MEDIA_VIDEO)
     }
 
     return permissions

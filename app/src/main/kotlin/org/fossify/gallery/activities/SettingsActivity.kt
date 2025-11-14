@@ -62,10 +62,6 @@ class SettingsActivity : SimpleActivity() {
         setupManageHiddenFolders()
         setupSearchAllFiles()
         setupShowHiddenItems()
-        setupAutoplayVideos()
-        setupRememberLastVideo()
-        setupLoopVideos()
-        setupOpenVideosOnSeparateScreen()
         setupMaxBrightness()
         setupCropThumbnails()
         setupAnimateGifs()
@@ -80,7 +76,6 @@ class SettingsActivity : SimpleActivity() {
         setupDeleteEmptyFolders()
         setupKeepScreenOn()
         setupAllowPhotoGestures()
-        setupAllowVideoGestures()
         setupAllowDownGesture()
         setupAllowRotatingWithGestures()
         setupShowNotch()
@@ -112,7 +107,6 @@ class SettingsActivity : SimpleActivity() {
         arrayOf(
             binding.settingsColorCustomizationSectionLabel,
             binding.settingsGeneralSettingsLabel,
-            binding.settingsVideosLabel,
             binding.settingsThumbnailsLabel,
             binding.settingsScrollingLabel,
             binding.settingsFullscreenMediaLabel,
@@ -126,6 +120,14 @@ class SettingsActivity : SimpleActivity() {
         ).forEach {
             it.setTextColor(getProperPrimaryColor())
         }
+
+        // Hide video-related settings
+        binding.settingsVideosLabel.beGone()
+        binding.settingsAutoplayVideosHolder.beGone()
+        binding.settingsRememberLastVideoPositionHolder.beGone()
+        binding.settingsLoopVideosHolder.beGone()
+        binding.settingsOpenVideosOnSeparateScreenHolder.beGone()
+        binding.settingsAllowVideoGesturesHolder.beGone()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
@@ -266,37 +268,6 @@ class SettingsActivity : SimpleActivity() {
         }
     }
 
-    private fun setupAutoplayVideos() {
-        binding.settingsAutoplayVideos.isChecked = config.autoplayVideos
-        binding.settingsAutoplayVideosHolder.setOnClickListener {
-            binding.settingsAutoplayVideos.toggle()
-            config.autoplayVideos = binding.settingsAutoplayVideos.isChecked
-        }
-    }
-
-    private fun setupRememberLastVideo() {
-        binding.settingsRememberLastVideoPosition.isChecked = config.rememberLastVideoPosition
-        binding.settingsRememberLastVideoPositionHolder.setOnClickListener {
-            binding.settingsRememberLastVideoPosition.toggle()
-            config.rememberLastVideoPosition = binding.settingsRememberLastVideoPosition.isChecked
-        }
-    }
-
-    private fun setupLoopVideos() {
-        binding.settingsLoopVideos.isChecked = config.loopVideos
-        binding.settingsLoopVideosHolder.setOnClickListener {
-            binding.settingsLoopVideos.toggle()
-            config.loopVideos = binding.settingsLoopVideos.isChecked
-        }
-    }
-
-    private fun setupOpenVideosOnSeparateScreen() {
-        binding.settingsOpenVideosOnSeparateScreen.isChecked = config.openVideosOnSeparateScreen
-        binding.settingsOpenVideosOnSeparateScreenHolder.setOnClickListener {
-            binding.settingsOpenVideosOnSeparateScreen.toggle()
-            config.openVideosOnSeparateScreen = binding.settingsOpenVideosOnSeparateScreen.isChecked
-        }
-    }
 
     private fun setupMaxBrightness() {
         binding.settingsMaxBrightness.isChecked = config.maxBrightness
@@ -465,13 +436,6 @@ class SettingsActivity : SimpleActivity() {
         }
     }
 
-    private fun setupAllowVideoGestures() {
-        binding.settingsAllowVideoGestures.isChecked = config.allowVideoGestures
-        binding.settingsAllowVideoGesturesHolder.setOnClickListener {
-            binding.settingsAllowVideoGestures.toggle()
-            config.allowVideoGestures = binding.settingsAllowVideoGestures.isChecked
-        }
-    }
 
     private fun setupAllowDownGesture() {
         binding.settingsAllowDownGesture.isChecked = config.allowDownGesture
@@ -879,14 +843,8 @@ class SettingsActivity : SimpleActivity() {
                 put(EXCLUDED_FOLDERS, TextUtils.join(",", config.excludedFolders))
                 put(SHOW_HIDDEN_MEDIA, config.showHiddenMedia)
                 put(FILE_LOADING_PRIORITY, config.fileLoadingPriority)
-                put(AUTOPLAY_VIDEOS, config.autoplayVideos)
-                put(REMEMBER_LAST_VIDEO_POSITION, config.rememberLastVideoPosition)
-                put(LOOP_VIDEOS, config.loopVideos)
-                put(OPEN_VIDEOS_ON_SEPARATE_SCREEN, config.openVideosOnSeparateScreen)
-                put(ALLOW_VIDEO_GESTURES, config.allowVideoGestures)
                 put(ANIMATE_GIFS, config.animateGifs)
                 put(CROP_THUMBNAILS, config.cropThumbnails)
-                put(SHOW_THUMBNAIL_VIDEO_DURATION, config.showThumbnailVideoDuration)
                 put(SHOW_THUMBNAIL_FILE_TYPES, config.showThumbnailFileTypes)
                 put(MARK_FAVORITE_ITEMS, config.markFavoriteItems)
                 put(SCROLL_HORIZONTALLY, config.scrollHorizontally)
@@ -929,7 +887,6 @@ class SettingsActivity : SimpleActivity() {
                 put(VIEW_TYPE_FILES, config.viewTypeFiles)
                 put(VIEW_TYPE_FOLDERS, config.viewTypeFolders)
                 put(SLIDESHOW_INTERVAL, config.slideshowInterval)
-                put(SLIDESHOW_INCLUDE_VIDEOS, config.slideshowIncludeVideos)
                 put(SLIDESHOW_INCLUDE_GIFS, config.slideshowIncludeGIFs)
                 put(SLIDESHOW_RANDOM_ORDER, config.slideshowRandomOrder)
                 put(SLIDESHOW_MOVE_BACKWARDS, config.slideshowMoveBackwards)
@@ -1023,14 +980,8 @@ class SettingsActivity : SimpleActivity() {
                 EXCLUDED_FOLDERS -> config.addExcludedFolders(value.toStringSet())
                 SHOW_HIDDEN_MEDIA -> config.showHiddenMedia = value.toBoolean()
                 FILE_LOADING_PRIORITY -> config.fileLoadingPriority = value.toInt()
-                AUTOPLAY_VIDEOS -> config.autoplayVideos = value.toBoolean()
-                REMEMBER_LAST_VIDEO_POSITION -> config.rememberLastVideoPosition = value.toBoolean()
-                LOOP_VIDEOS -> config.loopVideos = value.toBoolean()
-                OPEN_VIDEOS_ON_SEPARATE_SCREEN -> config.openVideosOnSeparateScreen = value.toBoolean()
-                ALLOW_VIDEO_GESTURES -> config.allowVideoGestures = value.toBoolean()
                 ANIMATE_GIFS -> config.animateGifs = value.toBoolean()
                 CROP_THUMBNAILS -> config.cropThumbnails = value.toBoolean()
-                SHOW_THUMBNAIL_VIDEO_DURATION -> config.showThumbnailVideoDuration = value.toBoolean()
                 SHOW_THUMBNAIL_FILE_TYPES -> config.showThumbnailFileTypes = value.toBoolean()
                 MARK_FAVORITE_ITEMS -> config.markFavoriteItems = value.toBoolean()
                 SCROLL_HORIZONTALLY -> config.scrollHorizontally = value.toBoolean()
@@ -1073,7 +1024,6 @@ class SettingsActivity : SimpleActivity() {
                 VIEW_TYPE_FILES -> config.viewTypeFiles = value.toInt()
                 VIEW_TYPE_FOLDERS -> config.viewTypeFolders = value.toInt()
                 SLIDESHOW_INTERVAL -> config.slideshowInterval = value.toInt()
-                SLIDESHOW_INCLUDE_VIDEOS -> config.slideshowIncludeVideos = value.toBoolean()
                 SLIDESHOW_INCLUDE_GIFS -> config.slideshowIncludeGIFs = value.toBoolean()
                 SLIDESHOW_RANDOM_ORDER -> config.slideshowRandomOrder = value.toBoolean()
                 SLIDESHOW_MOVE_BACKWARDS -> config.slideshowMoveBackwards = value.toBoolean()

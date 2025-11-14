@@ -102,7 +102,6 @@ import org.fossify.gallery.helpers.TYPE_GIFS
 import org.fossify.gallery.helpers.TYPE_IMAGES
 import org.fossify.gallery.helpers.TYPE_RAWS
 import org.fossify.gallery.helpers.TYPE_SVGS
-import org.fossify.gallery.helpers.TYPE_VIDEOS
 import org.fossify.gallery.interfaces.DirectoryOperationsListener
 import org.fossify.gallery.models.AlbumCover
 import org.fossify.gallery.models.Directory
@@ -595,7 +594,6 @@ class DirectoryAdapter(
                 !File(it.absolutePath).isDirectory &&
                     it.absolutePath.isMediaFile() && (showHidden || !it.name.startsWith('.')) &&
                     ((it.isImageFast() && filter and TYPE_IMAGES != 0) ||
-                        (it.isVideoFast() && filter and TYPE_VIDEOS != 0) ||
                         (it.isGif() && filter and TYPE_GIFS != 0) ||
                         (it.isRawFast() && filter and TYPE_RAWS != 0) ||
                         (it.isSvg() && filter and TYPE_SVGS != 0))
@@ -837,7 +835,6 @@ class DirectoryAdapter(
         bindItem(view).apply {
             dirPath?.text = "${directory.path.substringBeforeLast("/")}/"
             val thumbnailType = when {
-                directory.tmb.isVideoFast() -> TYPE_VIDEOS
                 directory.tmb.isGif() -> TYPE_GIFS
                 directory.tmb.isRawFast() -> TYPE_RAWS
                 directory.tmb.isSvg() -> TYPE_SVGS

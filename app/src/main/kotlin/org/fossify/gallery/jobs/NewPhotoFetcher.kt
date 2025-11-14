@@ -12,7 +12,6 @@ import android.net.Uri
 import android.os.Handler
 import android.provider.MediaStore
 import android.provider.MediaStore.Images
-import android.provider.MediaStore.Video
 import org.fossify.commons.extensions.getParentPath
 import org.fossify.commons.extensions.getStringValue
 import org.fossify.commons.helpers.ensureBackgroundThread
@@ -25,7 +24,6 @@ class NewPhotoFetcher : JobService() {
         const val PHOTO_VIDEO_CONTENT_JOB = 1
         private val MEDIA_URI = Uri.parse("content://${MediaStore.AUTHORITY}/")
         private val PHOTO_PATH_SEGMENTS = Images.Media.EXTERNAL_CONTENT_URI.pathSegments
-        private val VIDEO_PATH_SEGMENTS = Video.Media.EXTERNAL_CONTENT_URI.pathSegments
     }
 
     private val mHandler = Handler()
@@ -39,11 +37,9 @@ class NewPhotoFetcher : JobService() {
     fun scheduleJob(context: Context) {
         val componentName = ComponentName(context, NewPhotoFetcher::class.java)
         val photoUri = Images.Media.EXTERNAL_CONTENT_URI
-        val videoUri = Video.Media.EXTERNAL_CONTENT_URI
         JobInfo.Builder(PHOTO_VIDEO_CONTENT_JOB, componentName).apply {
+            // Only monitor photo URIs, not videos
             addTriggerContentUri(TriggerContentUri(photoUri, TriggerContentUri.FLAG_NOTIFY_FOR_DESCENDANTS))
-            addTriggerContentUri(TriggerContentUri(videoUri, TriggerContentUri.FLAG_NOTIFY_FOR_DESCENDANTS))
-            addTriggerContentUri(TriggerContentUri(MEDIA_URI, 0))
 
             try {
                 context.getSystemService(JobScheduler::class.java)?.schedule(build())
@@ -66,7 +62,7 @@ class NewPhotoFetcher : JobService() {
                 val ids = arrayListOf<String>()
                 for (uri in params.triggeredContentUris!!) {
                     val path = uri.pathSegments
-                    if (path != null && (path.size == PHOTO_PATH_SEGMENTS.size + 1 || path.size == VIDEO_PATH_SEGMENTS.size + 1)) {
+                    if (path != null && path.size == PHOTO_PATH_SEGMENTS.size + 1) {
                         ids.add(path[path.lastIndex])
                     }
                 }
@@ -83,14 +79,11 @@ class NewPhotoFetcher : JobService() {
                     var cursor: Cursor? = null
                     try {
                         val projection = arrayOf(Images.ImageColumns.DATA)
-                        val uris = arrayListOf(Images.Media.EXTERNAL_CONTENT_URI, Video.Media.EXTERNAL_CONTENT_URI)
-                        uris.forEach {
-                            cursor = contentResolver.query(it, projection, selection.toString(), null, null)
-                            while (cursor!!.moveToNext()) {
-                                val path = cursor!!.getStringValue(Images.ImageColumns.DATA)
-                                affectedFolderPaths.add(path.getParentPath())
-                                addPathToDB(path)
-                            }
+                        cursor = contentResolver.query(Images.Media.EXTERNAL_CONTENT_URI, projection, selection.toString(), null, null)
+                        while (cursor!!.moveToNext()) {
+                            val path = cursor!!.getStringValue(Images.ImageColumns.DATA)
+                            affectedFolderPaths.add(path.getParentPath())
+                            addPathToDB(path)
                         }
                     } catch (ignored: Exception) {
                     } finally {
